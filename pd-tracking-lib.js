@@ -11,7 +11,7 @@ var pdTrackingLib = (function () {
 	tracking.utils.ajaxRequest = (function () {
 
 	function ajaxRequest(httpMethod, url, data, clientData, callback, errorCallback) {
-		const urlWithRightDomain = utils.buildUrl(url);
+		const urlWithRightDomain = tracking.utils.buildUrl(url);
 
 		var xmlHttp = new XMLHttpRequest();
 		xmlHttp.onreadystatechange = function () {
@@ -129,7 +129,7 @@ tracking.utils.debounce = (function () {
 
 tracking.utils.registerBeacon = (function () {
 	function registerBeacon(url, data, clientData) {
-		const urlWithRightDomain = utils.buildUrl(url);
+		const urlWithRightDomain = tracking.utils.buildUrl(url);
 
 		window.addEventListener('unload', () => {
 			const headers = {
