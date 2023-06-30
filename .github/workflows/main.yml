@@ -24,7 +24,7 @@ jobs:
         with:     
           ref: "development"     
           fetch-depth: 0
-          token: ${{ secrets.PD_GITHUB2_PAT }}
+          token: 123123
       - name: Merge back to development
         env:
           RELEASE_NUMBER: ${{ vars.RELEASE_NUMBER }}                      
@@ -36,13 +36,4 @@ jobs:
           git commit -m "Auto-merge deployment prod" --allow-empty          
           git push --progress
 
-  merge-fail-notification:
-    needs: merge-back-to-development
-    if: ${{ failure() }}
-    uses: ./.github/workflows/call-run-notification.yaml
-    secrets: inherit
-    with:
-      title: 'MERGE BACK TO DEVELOPMENT FAILED'
-      message: 'The new version of SSR is in production, but the merge to back development failed (${{ github.event.repository.name }})'
-      color: 'D39000'
-      ref: master
+
