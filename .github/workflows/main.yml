@@ -1,0 +1,46 @@
+name: merge-back-to-development
+
+on:  
+  workflow_run:
+    workflows: [only-deploy-prod]
+    types:
+      - completed  
+
+jobs:
+  validate-job:
+    runs-on: ubuntu-latest
+    if: ${{ 1 == 1 }}
+    steps:
+      - run: echo "validated"
+
+  merge-back-to-development:
+    needs: validate-job    
+    runs-on: ubuntu-latest 
+    environment: production   
+    steps:
+      - uses: actions/checkout@v3
+        with:     
+          ref: "development"     
+          fetch-depth: 0
+          token: ${{ secrets.PD_GITHUB2_PAT }}
+      - name: Merge back to development
+        env:
+          RELEASE_NUMBER: ${{ vars.RELEASE_NUMBER }}                      
+        run: |
+          git config push.default simple
+          git config user.email "tecnologia@passeidireto.com"
+          git config user.name "pd-acquistion"          
+          git merge origin/release/$RELEASE_NUMBER --no-ff --no-commit              
+          git commit -m "Auto-merge deployment prod" --allow-empty          
+          git push --progress
+
+  merge-fail-notification:
+    needs: merge-back-to-development
+    if: ${{ failure() }}
+    uses: ./.github/workflows/call-run-notification.yaml
+    secrets: inherit
+    with:
+      title: 'MERGE BACK TO DEVELOPMENT FAILED'
+      message: 'The new version of SSR is in production, but the merge to back development failed (${{ github.event.repository.name }})'
+      color: 'D39000'
+      ref: master
