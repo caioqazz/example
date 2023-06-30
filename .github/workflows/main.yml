@@ -1,11 +1,13 @@
 name: merge-back-to-development
 
 on:  
-  workflow_run:
-    workflows: [only-deploy-prod]
-    types:
-      - completed  
-
+  workflow_dispatch:
+    inputs:
+      skip_quality_checks: 
+        description: "select this option to skip tests"
+        type: boolean        
+        required: false
+        default: false
 jobs:
   validate-job:
     runs-on: ubuntu-latest
